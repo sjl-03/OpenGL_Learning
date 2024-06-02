@@ -38,6 +38,11 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, buffer); // binding means I'm about to work on it
     glBufferData(GL_ARRAY_BUFFER, NUM_POSITIONS * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
+    // glBindBuffer(GL_ARRAY_BUFFER, 0); This is binding no 
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
