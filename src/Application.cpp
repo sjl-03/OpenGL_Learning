@@ -26,17 +26,27 @@ int main(void)
 
     std::cout << glGetString(GL_VERSION) << std::endl;
 
+    const int NUM_POSITIONS = 3;
+    float positions[NUM_POSITIONS * 2] = {
+        -0.5f, -0.5f,
+         0.0f,  0.5f,
+         0.5f, -0.5f,
+    };
+
+    unsigned int buffer;
+    glGenBuffers(1, &buffer); // this creates an id (unsigned int) for our 1 buffer and assign it to tghe variable buffer
+    glBindBuffer(GL_ARRAY_BUFFER, buffer); // binding means I'm about to work on it
+    glBufferData(GL_ARRAY_BUFFER, NUM_POSITIONS * 2 * sizeof(float), positions, GL_STATIC_DRAW);
+
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-0.5f,-0.5f);
-        glVertex2f(0.0f, 0.5f);
-        glVertex2f(0.5f, -0.5f);
-        glEnd();
+        glDrawArrays(GL_TRIANGLES, 0, NUM_POSITIONS); // draw call
+        // Note: OpenGL is a state machine, so the buffer currently bounded is the one the draw call use
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
