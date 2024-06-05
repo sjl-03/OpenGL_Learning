@@ -120,13 +120,23 @@ int main(void)
 
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    const int NUM_POSITIONS = 3;
+    const int NUM_POSITIONS = 4;
+    // Vertex buffer
     float positions[NUM_POSITIONS * 2] = {
-        -0.5f, -0.5f,
-         0.0f,  0.5f,
-         0.5f, -0.5f,
+        -0.5f, -0.5f, // 0
+         0.5f, -0.5f, // 1
+         0.5f,  0.5f, // 2
+        -0.5f,  0.5f  // 3
     };
 
+    const int NUM_INDICES = 6;
+    // Index buffer
+    unsigned int indices[] = { // Note this has to be unsigned
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    // Set vertex buffer to the GPU
     unsigned int buffer;
     glGenBuffers(1, &buffer); // this creates an id (unsigned int) for our 1 buffer and assign it to tghe variable buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer); // binding means I'm about to work on it
@@ -137,6 +147,12 @@ int main(void)
     glEnableVertexAttribArray(0);
     const int ATTRIBUTE_INDEX = 0;
     glVertexAttribPointer(ATTRIBUTE_INDEX, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+
+    // Set index buffer to the GPU
+    unsigned int ibo; // Index buffer object
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, NUM_INDICES * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
     std::cout << "Vertex" << std::endl;
@@ -154,8 +170,12 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glDrawArrays(GL_TRIANGLES, 0, NUM_POSITIONS); // draw call, draw the currently bound buffer
+        // glDrawArrays(GL_TRIANGLES, 0, NUM_POSITIONS); // draw call, draw the currently bound buffer
         // Note: OpenGL is a state machine, so the buffer currently bounded is the one the draw call use
+
+        // This draws indes buffer, instead of glDrawArrays which draws vertex buffer
+        glDrawElements(GL_TRIANGLES, NUM_INDICES, GL_UNSIGNED_INT, nullptr);
+        // We can put nullptr because we have bound the index buffer ibo already
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
